@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: csp
+  main:
+    web-application-type: none
+  datasource:
+    url: ${csp.db.url}
+    driver-class-name: ${csp.db.driver}
+    username: ${csp.db.username}
+    password: ${csp.db.password}
