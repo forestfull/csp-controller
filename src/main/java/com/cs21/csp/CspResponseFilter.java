@@ -19,7 +19,6 @@ public class CspResponseFilter implements Filter {
     private final CspResourceService cspResourceService;
 
     public CspResponseFilter(String driverClassName, String url, String username, String password, String dialect) {
-        Configuration configuration = new Configuration();
         Properties properties = new Properties();
         properties.put(Environment.DRIVER, driverClassName);
         properties.put(Environment.URL, url);
@@ -30,12 +29,10 @@ public class CspResponseFilter implements Filter {
 
         properties.put(Environment.SHOW_SQL, "true");
         properties.put(Environment.HBM2DDL_AUTO, "create-drop");
-        configuration.setProperties(properties);
-        configuration.addAnnotatedClass(CsCspResources.class);
 
-        SessionFactory sessionFactory = configuration.buildSessionFactory(new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build());
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("csp", properties);
 
-        this.cspResourceService = new CspResourceService(sessionFactory);
+        this.cspResourceService = new CspResourceService(entityManagerFactory);
     }
 
     @Override

@@ -5,146 +5,138 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import javax.persistence.*;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CspResourceService {
 
-    private final SessionFactory sessionFactory;
-
+    private final EntityManagerFactory entityManagerFactory;
 
     public List<CsCspResources> getAll() {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            List<CsCspResources> resourcesList = session.createQuery("SELECT csp FROM CsCspResources csp", CsCspResources.class).list();
+            List<CsCspResources> resourcesList = entityManager.createQuery("SELECT csp FROM CsCspResources csp", CsCspResources.class).getResultList();
 
             transaction.commit();
-            session.flush();
-
+            entityManager.flush();
             return resourcesList;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+
+        } catch (IllegalArgumentException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
-
         return null;
     }
 
     public void save(String target, String resource) {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            session.save(CsCspResources.builder().target(target).resourceUrl(resource).build());
+            entityManager.persist(CsCspResources.builder().target(target).resourceUrl(resource).build());
 
             transaction.commit();
-            session.flush();
-
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+            entityManager.flush();
+        } catch (IllegalArgumentException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
     }
 
     public void save(CsCspResources resource) {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            session.save(resource);
+            entityManager.persist(resource);
 
             transaction.commit();
-            session.flush();
-
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+            entityManager.flush();
+        } catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
     }
 
     public void update(Long id, String target, String resource) {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            CsCspResources csCspResources = session.get(CsCspResources.class, id);
+            CsCspResources csCspResources = entityManager.find(CsCspResources.class, id);
             csCspResources.setTarget(target);
             csCspResources.setResourceUrl(resource);
 
             transaction.commit();
-            session.flush();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+            entityManager.flush();
+        } catch (IllegalArgumentException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
     }
 
     public void update(CsCspResources resource) {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            CsCspResources csCspResources = session.get(CsCspResources.class, resource.getId());
+            CsCspResources csCspResources = entityManager.find(CsCspResources.class, resource.getId());
             csCspResources.setTarget(resource.getTarget());
             csCspResources.setResourceUrl(resource.getResourceUrl());
 
             transaction.commit();
-            session.flush();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+            entityManager.flush();
+        } catch (IllegalArgumentException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
     }
 
     public void delete(Long id) {
-        Transaction transaction = null;
-        Session session = sessionFactory.openSession();
+        final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            transaction = session.beginTransaction();
+            transaction.begin();
 
-            session.delete(CsCspResources.builder().id(id).build());
+            CsCspResources csCspResources = entityManager.find(CsCspResources.class, id);
+            entityManager.remove(csCspResources);
 
             transaction.commit();
-            session.flush();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace(System.err);
+            entityManager.flush();
+        } catch (IllegalArgumentException e) {
+            if (transaction.isActive()) transaction.rollback();
 
         } finally {
-            session.close();
+            entityManager.close();
 
         }
     }
