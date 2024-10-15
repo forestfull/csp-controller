@@ -3,7 +3,6 @@ package com.cs21.csp;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,8 +21,6 @@ public class CspResourceService {
             resourcesList = entityManager.createQuery("SELECT csp FROM CsCspResources csp", CsCspResources.class).getResultList();
 
             transaction.commit();
-            entityManager.flush();
-
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
 
@@ -45,13 +42,11 @@ public class CspResourceService {
             entityManager.persist(CsCspResources.builder().target(target).resourceUrl(resource).build());
 
             transaction.commit();
-            entityManager.flush();
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
 
         } finally {
             entityManager.close();
-
         }
     }
 
@@ -65,13 +60,11 @@ public class CspResourceService {
             entityManager.persist(resource);
 
             transaction.commit();
-            entityManager.flush();
         } catch (EntityExistsException | IllegalArgumentException | TransactionRequiredException e) {
             if (transaction.isActive()) transaction.rollback();
 
         } finally {
             entityManager.close();
-
         }
     }
 
@@ -87,13 +80,11 @@ public class CspResourceService {
             csCspResources.setResourceUrl(resource);
 
             transaction.commit();
-            entityManager.flush();
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
 
         } finally {
             entityManager.close();
-
         }
     }
 
@@ -109,13 +100,11 @@ public class CspResourceService {
             csCspResources.setResourceUrl(resource.getResourceUrl());
 
             transaction.commit();
-            entityManager.flush();
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
 
         } finally {
             entityManager.close();
-
         }
     }
 
@@ -130,13 +119,11 @@ public class CspResourceService {
             entityManager.remove(csCspResources);
 
             transaction.commit();
-            entityManager.flush();
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
 
         } finally {
             entityManager.close();
-
         }
     }
 }
