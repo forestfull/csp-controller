@@ -8,11 +8,11 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
-
 
 public class CspResponseFilter implements Filter {
 
@@ -29,7 +29,7 @@ public class CspResponseFilter implements Filter {
         if (StringUtils.hasText(dialect)) properties.put(Environment.DIALECT, dialect);
 
         properties.put(Environment.SHOW_SQL, "true");
-        properties.put(Environment.HBM2DDL_AUTO, "create-only");
+        properties.put(Environment.HBM2DDL_AUTO, "create-drop");
         configuration.setProperties(properties);
         configuration.addAnnotatedClass(CsCspResources.class);
 
@@ -41,9 +41,6 @@ public class CspResponseFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("com.cs21.csp");
-
 
         response.addHeader("Content-Security-Policy", cspResourceService.getAll().toArray().toString());
 

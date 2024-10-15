@@ -12,7 +12,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "target_resource_policy", columnNames = {"target", "resource_url"})})
+@Table(name = "CS_CSP_RESOURCES", uniqueConstraints = {@UniqueConstraint(name = "target_resource_policy", columnNames = {"target", "resource_url"})})
 public class CsCspResources {
 
     @Id
