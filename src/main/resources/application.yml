@@ -8,3 +8,6 @@ spring:
     driver-class-name: ${csp.db.driver}
     username: ${csp.db.username}
     password: ${csp.db.password}
+  jpa:
+    hibernate:
+      ddl-auto: create
