@@ -29,7 +29,7 @@ public class CspResponseFilter implements Filter {
         if (StringUtils.hasText(dialect)) properties.put(Environment.DIALECT, dialect);
 
         properties.put(Environment.SHOW_SQL, "true");
-        properties.put(Environment.HBM2DDL_AUTO, "create");
+        properties.put(Environment.HBM2DDL_AUTO, "create-only");
         configuration.setProperties(properties);
         configuration.addAnnotatedClass(CsCspResources.class);
 
