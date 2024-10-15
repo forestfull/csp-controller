@@ -4,6 +4,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManagerFactory;
@@ -11,6 +15,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,20 +24,28 @@ public class CspResponseFilter implements Filter {
     private final CspResourceService cspResourceService;
 
     public CspResponseFilter(String driverClassName, String url, String username, String password, String dialect) {
+        final DataSource dataSource = DataSourceBuilder.create()
+                .driverClassName(driverClassName)
+                .url(url)
+                .username(username)
+                .password(password)
+                .build();
+
         Properties properties = new Properties();
-        properties.put(Environment.DRIVER, driverClassName);
-        properties.put(Environment.URL, url);
-        properties.put(Environment.USER, username);
-        properties.put(Environment.PASS, password);
-
         if (StringUtils.hasText(dialect)) properties.put(Environment.DIALECT, dialect);
-
         properties.put(Environment.SHOW_SQL, "true");
         properties.put(Environment.HBM2DDL_AUTO, "create-drop");
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("csp", properties);
+        LocalContainerEntityManagerFactoryBean managerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        managerFactoryBean.setPersistenceUnitName("arimoa-csp");
+        managerFactoryBean.setDataSource(dataSource);
+        managerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        managerFactoryBean.setPackagesToScan("com.cs21.csp");
+        managerFactoryBean.setJpaProperties(properties);
+        managerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+        managerFactoryBean.afterPropertiesSet();
 
-        this.cspResourceService = new CspResourceService(entityManagerFactory);
+        this.cspResourceService = new CspResourceService(managerFactoryBean.getObject());
     }
 
     @Override
