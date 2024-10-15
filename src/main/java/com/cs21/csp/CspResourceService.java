@@ -1,11 +1,9 @@
 package com.cs21.csp;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,15 +14,15 @@ public class CspResourceService {
     public List<CsCspResources> getAll() {
         final EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
+        List<CsCspResources> resourcesList = null;
 
         try {
             transaction.begin();
 
-            List<CsCspResources> resourcesList = entityManager.createQuery("SELECT csp FROM CsCspResources csp", CsCspResources.class).getResultList();
+            resourcesList = entityManager.createQuery("SELECT csp FROM CsCspResources csp", CsCspResources.class).getResultList();
 
             transaction.commit();
             entityManager.flush();
-            return resourcesList;
 
         } catch (IllegalArgumentException e) {
             if (transaction.isActive()) transaction.rollback();
@@ -33,7 +31,8 @@ public class CspResourceService {
             entityManager.close();
 
         }
-        return null;
+
+        return resourcesList;
     }
 
     public void save(String target, String resource) {
