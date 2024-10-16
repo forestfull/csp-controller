@@ -3,6 +3,7 @@ package com.cs21.csp;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,9 +24,13 @@ public class CsCspResources {
     private String resourceUrl;
 
     public static CsCspResources of(Map<String, String> map) {
-        return CsCspResources.builder()
-                .target(map.get("target"))
-                .resourceUrl(Objects.isNull(map.get("resource_url")) ? map.get("resourceUrl") : map.get("resource_url"))
-                .build();
+        return CsCspResources.builder().target(map.get("target")).resourceUrl(Objects.isNull(map.get("resource_url")) ? map.get("resourceUrl") : map.get("resource_url")).build();
+    }
+
+    public Map<String, String> convertMap() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("target", this.getTarget());
+        map.put("resource_url", this.getResourceUrl());
+        return map;
     }
 }
