@@ -3,7 +3,6 @@ package com.cs21.csp;
 import lombok.Getter;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.hibernate.tool.schema.Action;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -33,7 +32,7 @@ public class CspResponseFilter implements Filter {
         Properties properties = new Properties();
         if (StringUtils.hasText(dialect)) properties.put(Environment.DIALECT, dialect);
         properties.put(Environment.SHOW_SQL, "true");
-        properties.put(Environment.HBM2DDL_AUTO, Action.CREATE_ONLY);
+        properties.put(Environment.HBM2DDL_AUTO, "create-only");
 
         LocalContainerEntityManagerFactoryBean managerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         managerFactoryBean.setPersistenceUnitName("arimoa-csp");
