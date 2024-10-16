@@ -77,3 +77,22 @@ cspFilter.addMappingForUrlPatterns(null, false, "*.do");
 > - (3) 상기와 같이 CSP가 적용된 목록을 JSON 형식으로 조회 할 수 있으며   
 Submit 버튼을 눌러 수정등록이 가능하다.
 
+
+## 이용 유의 사항
+
+> - 해당 기능의 사용자는 매우 제한 적이기 때문에 DB에 대한 Pool 설정 등   
+>  성능에 대한 테스트가 고려되지 않았습니다.
+> - 너무 잦은 수정(예시: 약 분당 30회 이상) 등은 지양해주시면 감사하겠습니다.
+
+## 구현 정보
+
+> - JDK 1.8 
+> - hibernate 5.6.15.Final
+> - org.springframework.jdbc
+> - org.springframework.web
+> ---
+> **spring boot** framework 바탕으로 구현되었습니다.
+
+---
+
+감사합니다.
