@@ -11,13 +11,15 @@
 </p>
 
 <script>
-    function requestCspJson(method, url,requestBody) {
+    function requestCspJson(method, url,requestBody, callback) {
         let xhr = new XMLHttpRequest();
         xhr.open(method, url);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = e => {
-            if (xhr.readyState === xhr.DONE)
-                document.getElementById('cspListJson').innerHTML = xhr.responseText;
+            if (xhr.readyState === xhr.DONE){
+                document.getElementById('cspListJson').value = xhr.responseText;
+                callback();
+            }
         };
         xhr.send(requestBody);
     }
@@ -29,7 +31,7 @@
         let isConfirmed = window.confirm('수정하시겠습니까?');
         if (!isConfirmed) return;
 
-        requestCspJson('POST', '/_Admin/csp-json', document.getElementById('cspListJson').innerHTML);
+        requestCspJson('POST', '/_Admin/csp-json', document.getElementById('cspListJson').value, () => location.reload());
     });
 </script>
 </body>

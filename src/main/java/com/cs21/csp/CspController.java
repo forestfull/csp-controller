@@ -49,13 +49,22 @@ public class CspController {
         if (resources == null) {
             return "";
         } else {
-            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(resources.stream().map(CsCspResources::convertMap).collect(Collectors.groupingBy(map -> map.get("target"))));
+            final CsCspResources.Json json = new CsCspResources.Json();
+            resources.stream()
+                    .map(CsCspResources::convertMap)
+                    .collect(Collectors.groupingBy(map -> map.get("target")))
+                    .forEach((key, value) -> json.put(key, value.stream().map(map -> map.get("url")).collect(Collectors.toList())));
+
+            return new ObjectMapper()
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(json);
         }
     }
 
     @PostMapping("/_Admin/csp-json")
-    String registerCspList(@RequestBody String resourcesString) {
-        System.out.println(resourcesString);
-        return resourcesString;
+    void registerCspList(@RequestBody String resourcesString) throws JsonProcessingException {
+        final CsCspResources.Json map = new ObjectMapper().readValue(resourcesString, CsCspResources.Json.class);
+        List<CsCspResources> cspResourcesList = map.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(url -> CsCspResources.builder().target(entry.getKey()).resourceUrl(url).build())).collect(Collectors.toList());
+        CspResponseFilter.getService().register(cspResourcesList);
     }
 }
