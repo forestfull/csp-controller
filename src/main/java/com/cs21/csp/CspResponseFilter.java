@@ -45,9 +45,8 @@ public class CspResponseFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        response.addHeader("Content-Security-Policy", cspResourceService.getAll().toArray().toString());
+        response.addHeader("Content-Security-Policy", CsCspResources.getResponseHeaderFormat(getService().getAll()));
 
         filterChain.doFilter(servletRequest, response);
     }
-
 }
