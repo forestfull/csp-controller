@@ -1,31 +1,22 @@
 package com.cs21.csp;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+import lombok.Getter;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 
 public class CspResponseFilter implements Filter {
 
+    @Getter
+    private static CspResourceService service;
     private final CspResourceService cspResourceService;
 
     public CspResponseFilter(String className, String url, String username, String password, String dialect) {
@@ -47,6 +38,7 @@ public class CspResponseFilter implements Filter {
         managerFactoryBean.afterPropertiesSet();
 
         this.cspResourceService = new CspResourceService(managerFactoryBean.getObject());
+        service = this.cspResourceService;
     }
 
     @Override
@@ -57,4 +49,5 @@ public class CspResponseFilter implements Filter {
 
         filterChain.doFilter(servletRequest, response);
     }
+
 }
