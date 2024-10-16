@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,18 +38,24 @@ public class CspController {
         this.indexContents = sb.toString();
     }
 
-    @GetMapping("/_Admin/csp.json")
-    String goCspJson(HttpServletRequest request) {
+    @GetMapping("/_Admin/csp-json")
+    String goCspJson() {
         return indexContents;
     }
 
-    @PostMapping("/_Admin/csp.json")
-    String getCspJson(HttpServletRequest request) throws JsonProcessingException {
+    @GetMapping("/_Admin/csp-json/list")
+    String getCspJson() throws JsonProcessingException {
         final List<CsCspResources> resources = CspResponseFilter.getService().getAll();
         if (resources == null) {
             return "";
         } else {
             return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(resources.stream().map(CsCspResources::convertMap).collect(Collectors.groupingBy(map -> map.get("target"))));
         }
+    }
+
+    @PostMapping("/_Admin/csp-json")
+    String registerCspList(@RequestBody String resourcesString) {
+        System.out.println(resourcesString);
+        return resourcesString;
     }
 }
