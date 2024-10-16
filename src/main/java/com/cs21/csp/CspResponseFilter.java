@@ -18,9 +18,15 @@ public class CspResponseFilter implements Filter {
 
     @Getter
     private static CspResourceService service;
-    private final CspResourceService cspResourceService;
 
-    public CspResponseFilter(String className, String url, String username, String password, String dialect) {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        final String className = filterConfig.getInitParameter("className");
+        final String url = filterConfig.getInitParameter("url");
+        final String username = filterConfig.getInitParameter("username");
+        final String password = filterConfig.getInitParameter("password");
+        final String dialect = filterConfig.getInitParameter("dialect");
+
         final DriverManagerDataSource dataSource = new DriverManagerDataSource(url, username, password);
         dataSource.setDriverClassName(className);
 
@@ -38,8 +44,9 @@ public class CspResponseFilter implements Filter {
         managerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         managerFactoryBean.afterPropertiesSet();
 
-        this.cspResourceService = new CspResourceService(managerFactoryBean.getObject());
-        service = this.cspResourceService;
+        service = new CspResourceService(managerFactoryBean.getObject());
+
+        Filter.super.init(filterConfig);
     }
 
     @Override
